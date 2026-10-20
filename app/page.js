@@ -18,6 +18,12 @@ export default function Home(){
   const [handle, setHandle] = useState('')
   const [loading, setLoading] = useState(false)
   const [stats, setStats] = useState(null)
+  const [loginOpen, setLoginOpen] = useState(false)
+  const [user, setUser] = useState(null)
+  const [loginName, setLoginName] = useState('')
+  const [reviews, setReviews] = useState(REVIEWS)
+  const [newReview, setNewReview] = useState({name:'', handle:'', text:'', stars:5})
+  const [showAddReview, setShowAddReview] = useState(false)
 
   useEffect(()=>{
     const io = new IntersectionObserver((entries)=>{
@@ -57,6 +63,20 @@ export default function Home(){
       tip: followers < 5000 ? 'محتاج تزود متابعين عشان تبقى نجم! 🚀' : 'حسابك جامد! كمل وهنخليك تريند 🔥'
     })
     setLoading(false)
+  }
+
+  const doLogin = ()=>{
+    if(!loginName) return
+    setUser({name: loginName})
+    setLoginOpen(false)
+    setLoginName('')
+  }
+  const addReview = ()=>{
+    if(!newReview.name || !newReview.text) return
+    const r = {name: newReview.name, handle: newReview.handle || '@'+newReview.name, text: newReview.text, stars: newReview.stars, platform: 'TikTok', avatar: '⭐'}
+    setReviews([r, ...reviews])
+    setNewReview({name:'', handle:'', text:'', stars:5})
+    setShowAddReview(false)
   }
 
   const waLink = (text) => `https://wa.me/201275551116?text=${encodeURIComponent(text)}`
@@ -105,7 +125,10 @@ export default function Home(){
             <div className="w-9 h-9 rounded-[12px] bg-[#8b5cf6] shadow-[0_0_30px_rgba(139,92,246,.5)] grid place-items-center font-black">T</div>
             <span className="font-display font-bold text-[20px] tracking-tighter">TREND-UP.</span>
           </div>
-          <a href={waLink('السلام عليكم عايز استفسر عن خدمات Trend-Up')} target="_blank" className="btn-shimmer bg-gradient-to-r from-[#8b5cf6] via-[#ec4899] to-[#8b5cf6] rounded-full px-6 py-2.5 text-[13px] font-black">تواصل واتساب 💬</a>
+          <div className="flex items-center gap-3">
+            {user ? <span className="text-[13px] bg-white/10 border border-white/10 rounded-full px-4 py-2">👋 {user.name}</span> : <button onClick={()=>setLoginOpen(true)} className="bg-white/[0.06] border border-white/[0.1] rounded-full px-5 py-2.5 text-[13px] font-bold hover:bg-white/[0.1]">🔐 تسجيل دخول</button>}
+            <a href={waLink('السلام عليكم عايز استفسر عن خدمات Trend-Up')} target="_blank" className="btn-shimmer bg-gradient-to-r from-[#8b5cf6] via-[#ec4899] to-[#8b5cf6] rounded-full px-6 py-2.5 text-[13px] font-black">تواصل واتساب 💬</a>
+          </div>
         </div>
       </nav>
 
@@ -262,11 +285,44 @@ export default function Home(){
         </div>
       </section>
 
+      {/* LOGIN MODAL */}
+      {loginOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-md grid place-items-center p-6">
+          <div className="bg-[#151517] border border-white/[0.08] rounded-[24px] p-8 w-full max-w-[380px]">
+            <h3 className="font-black text-[20px]">🔐 تسجيل دخول</h3>
+            <p className="text-[13px] text-zinc-400 mt-2">اكتب اسمك عشان تقدر تضيف ريفيو</p>
+            <input value={loginName} onChange={e=>setLoginName(e.target.value)} onKeyDown={e=>e.key==='Enter' && doLogin()} placeholder="اسمك" className="w-full mt-6 bg-black border border-white/[0.08] rounded-full px-4 py-3 text-[14px] outline-none focus:border-[#8b5cf6]" />
+            <div className="flex gap-3 mt-4">
+              <button onClick={doLogin} className="flex-1 bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] rounded-full py-3 font-black text-[13px]">دخول</button>
+              <button onClick={()=>setLoginOpen(false)} className="px-6 bg-white/[0.06] rounded-full text-[13px]">إلغاء</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* REVIEWS */}
       <section id="reviews" className="max-w-[1280px] mx-auto px-6 mt-16">
-        <h2 className="reveal font-display font-black text-[32px]">آراء عملائنا ⭐</h2>
+        <div className="flex justify-between items-center">
+          <h2 className="reveal font-display font-black text-[32px]">آراء عملائنا ⭐</h2>
+          <button onClick={()=>{ if(!user){ setLoginOpen(true); return } setShowAddReview(!showAddReview)}} className="reveal bg-white text-black rounded-full px-5 py-2.5 font-black text-[13px]">+ اكتب رأيك</button>
+        </div>
+        {showAddReview && (
+          <div className="reveal mt-6 bg-[#151517] border border-[#8b5cf6]/20 rounded-[20px] p-6">
+            <h4 className="font-bold text-[15px]">✍️ اكتب تجربتك مع Trend-Up</h4>
+            <div className="grid md:grid-cols-2 gap-3 mt-4">
+              <input value={newReview.name} onChange={e=>setNewReview({...newReview, name:e.target.value})} placeholder="اسمك" className="bg-black border border-white/[0.08] rounded-full px-4 py-3 text-[13px] outline-none" />
+              <input value={newReview.handle} onChange={e=>setNewReview({...newReview, handle:e.target.value})} placeholder="يوزرك (اختياري)" className="bg-black border border-white/[0.08] rounded-full px-4 py-3 text-[13px] outline-none" />
+            </div>
+            <textarea value={newReview.text} onChange={e=>setNewReview({...newReview, text:e.target.value})} placeholder="احكي تجربتك..." className="w-full mt-3 bg-black border border-white/[0.08] rounded-[16px] px-4 py-3 text-[13px] outline-none h-[90px]" />
+            <div className="flex justify-between items-center mt-4">
+              <div className="flex gap-1">{[1,2,3,4,5].map(s=><button key={s} onClick={()=>setNewReview({...newReview, stars:s})} className={`text-[20px] ${s<=newReview.stars ? 'text-[#f59e0b]' : 'text-zinc-600'}`}>★</button>)}</div>
+              <button onClick={addReview} className="bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] rounded-full px-6 py-2.5 font-black text-[13px]">نشر رأيي 🚀</button>
+            </div>
+          </div>
+        )}
+
         <div className="grid md:grid-cols-3 gap-4 mt-8">
-          {REVIEWS.map((r,i)=>(
+          {reviews.map((r,i)=>(
             <div key={i} className="reveal bg-[#151517] border border-white/[0.06] rounded-[20px] p-5 hover:border-[#8b5cf6]/30 transition">
               <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#8b5cf6] to-[#ec4899] grid place-items-center">{r.avatar}</div><div><p className="font-bold text-[13px]">{r.name}</p><p className="text-[11px] text-zinc-500">{r.handle}</p></div><div className="mr-auto text-[#f59e0b] text-[12px]">{'★'.repeat(r.stars)}</div></div>
               <p className="text-[13px] text-zinc-300 leading-6 mt-4">"{r.text}"</p>
