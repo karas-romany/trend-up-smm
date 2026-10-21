@@ -1,3 +1,88 @@
+
+// Loading Bar Component
+function TopLoadingBar() {
+  const [progress, setProgress] = useState(0);
+  const [visible, setVisible] = useState(false);
+  
+  useEffect(() => { setTimeout(()=> setInitialLoading(false), 1200); }, []);
+  useEffect(() => {
+    let interval;
+    const startLoading = () => {
+      setVisible(true);
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if(prev >= 90) return prev;
+          return prev + Math.random()*15;
+        });
+      }, 200);
+    };
+    
+    const stopLoading = () => {
+      setProgress(100);
+      setTimeout(() => {
+        setVisible(false);
+        setProgress(0);
+      }, 500);
+      clearInterval(interval);
+    };
+
+    // Show on initial load
+    startLoading();
+    const t = setTimeout(stopLoading, 1500);
+
+    // Listen for route changes / clicks
+    const handleClick = (e) => {
+      const target = e.target.closest('a, button');
+      if(target){
+        startLoading();
+        setTimeout(stopLoading, 1000);
+      }
+    };
+    window.addEventListener('click', handleClick);
+
+    return () => {
+      clearTimeout(t);
+      clearInterval(interval);
+      window.removeEventListener('click', handleClick);
+    };
+  }, []);
+
+  if(!visible) return null;
+
+  return (
+    <div style={{position:'fixed', top:0, left:0, right:0, zIndex:9999, height:'4px', background:'transparent'}}>
+      <div style={{
+        height:'100%',
+        width: progress + '%',
+        background:'linear-gradient(90deg, #7c3aed, #ec4899, #f59e0b)',
+        transition:'width 0.3s ease',
+        boxShadow:'0 0 10px rgba(124,58,237,0.7)'
+      }} />
+    </div>
+  );
+}
+
+// Full Page Loader for initial load
+function PageLoader({ show }) {
+  if(!show) return null;
+  return (
+    <div style={{
+      position:'fixed', inset:0, zIndex:9998, 
+      background:'rgba(255,255,255,0.9)', backdropFilter:'blur(10px)',
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'20px'
+    }}>
+      <div style={{
+        width:'60px', height:'60px', border:'4px solid #e9d5ff', 
+        borderTopColor:'#7c3aed', borderRadius:'50%', 
+        animation:'spin 0.8s linear infinite'
+      }} />
+      <div style={{fontWeight:'700', color:'#7c3aed'}}>جاري التحميل...</div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
+  );
+}
+
 'use client'
 import { useState, useEffect } from 'react'
 
@@ -17,6 +102,7 @@ export default function Home(){
   const [activeTab, setActiveTab] = useState('tiktok')
   const [authOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState('login')
+  const [initialLoading, setInitialLoading] = useState(true);
   const [user, setUser] = useState(null)
   const [authForm, setAuthForm] = useState({name:'', email:'', password:''})
   const [reviews, setReviews] = useState(REVIEWS)
