@@ -155,18 +155,78 @@ export default function Home(){
         </div>
       </nav>
 
-      {/* USER DASHBOARD */}
+      {/* USER DASHBOARD + ORDERS BAR */}
       {showDashboard && user && (
-        <div className="max-w-[1280px] mx-auto px-6 mt-6">
+        <div className="max-w-[1280px] mx-auto px-6 mt-6 space-y-4">
           <div className="reveal bg-[#151517] border border-[#8b5cf6]/20 rounded-[24px] p-6">
             <div className="flex justify-between"><h3 className="font-black text-[18px]">👋 أهلا {user.name}</h3><button onClick={()=>setShowDashboard(false)} className="text-zinc-500">✕</button></div>
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="bg-black border border-white/[0.06] rounded-[16px] p-4 text-center"><p className="text-2xl">💎</p><p className="font-black text-[20px] mt-2">{user.points}</p><p className="text-[11px] text-zinc-500">نقطة</p></div>
-              <div className="bg-black border border-white/[0.06] rounded-[16px] p-4 text-center"><p className="text-2xl">🛒</p><p className="font-black text-[20px] mt-2">{user.orders}</p><p className="text-[11px] text-zinc-500">طلب</p></div>
+              <div className="bg-black border border-white/[0.06] rounded-[16px] p-4 text-center"><p className="text-2xl">🛒</p><p className="font-black text-[20px] mt-2">{user.allOrders?.length || user.orders || 0}</p><p className="text-[11px] text-zinc-500">طلب</p></div>
               <div className="bg-black border border-white/[0.06] rounded-[16px] p-4 text-center"><p className="text-2xl">🎟️</p><p className="font-black text-[20px] mt-2">{user.discounts?.length || 0}</p><p className="text-[11px] text-zinc-500">خصم</p></div>
             </div>
             <div className="mt-6 flex gap-2">
               {user.discounts?.map((d,i)=><div key={i} className="bg-gradient-to-r from-[#8b5cf6]/20 to-[#ec4899]/20 border border-[#8b5cf6]/30 rounded-full px-4 py-2 text-[12px]"><b>{d.code}</b> - {d.off}</div>)}
+            </div>
+          </div>
+
+          {/* 📦 قايمة طلباتك + حالة الطلب - بار حلو */}
+          <div className="reveal bg-gradient-to-br from-[#151517] to-[#0a0a0a] border border-white/[0.08] rounded-[24px] overflow-hidden">
+            <div className="h-[2px] w-full bg-gradient-to-r from-[#8b5cf6] via-[#ec4899] to-[#06b6d4]"></div>
+            <div className="p-6">
+              <div className="flex justify-between items-center">
+                <h3 className="font-black text-[18px]">📦 طلباتك</h3>
+                <span className="text-[11px] bg-white/[0.06] border border-white/[0.08] rounded-full px-3 py-1">{user.allOrders?.length || 0} طلب</span>
+              </div>
+              
+              {(!user.allOrders || user.allOrders.length===0) ? (
+                <div className="mt-8 text-center py-10 bg-black/50 border border-dashed border-white/[0.08] rounded-[16px]">
+                  <p className="text-3xl">🛒</p>
+                  <p className="text-[14px] text-zinc-400 mt-3">لسه معملتش أي طلب</p>
+                  <p className="text-[12px] text-zinc-600 mt-1">اطلب دلوقتي وهنتبع حالة طلبك هنا</p>
+                </div>
+              ) : (
+                <div className="mt-6 space-y-4">
+                  {user.allOrders.map((o,i)=>(
+                    <div key={i} className="bg-black border border-white/[0.06] rounded-[16px] p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-bold text-[13px]">{o.name}</p>
+                          <p className="text-[11px] text-zinc-500 mt-1">#{o.id} • {o.date}</p>
+                        </div>
+                        <span className={`text-[10px] font-black px-3 py-1 rounded-full ${o.status==='مكتمل' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : o.status==='قيد التنفيذ' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/30'}`}>{o.status}</span>
+                      </div>
+                      {/* البار الحلو لحالة الطلب */}
+                      <div className="mt-4">
+                        <div className="flex justify-between text-[10px] text-zinc-500 mb-2">
+                          <span className={o.step>=1 ? 'text-white' : ''}>📝 تم الطلب</span>
+                          <span className={o.step>=2 ? 'text-white' : ''}>💳 دفع</span>
+                          <span className={o.step>=3 ? 'text-white' : ''}>⚙️ تنفيذ</span>
+                          <span className={o.step>=4 ? 'text-[#8b5cf6]' : ''}>✅ تم</span>
+                        </div>
+                        <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+                          <div className="h-full bg-gradient-to-r from-[#8b5cf6] via-[#ec4899] to-[#06b6d4] rounded-full transition-all duration-700" style={{width: `${o.step*25}%`}}></div>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex justify-between items-center">
+                        <p className="text-[12px]"><span className="text-zinc-500">السعر:</span> <b className="text-[#8b5cf6]">{o.price}</b></p>
+                        <p className="text-[11px] text-zinc-400">{o.handle}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <button onClick={()=>{
+                // تجربة: اضافة طلب وهمي عشان تشوف الشكل
+                const newOrder = {id: 'TU'+Math.floor(Math.random()*90000+10000), name: '1000 متابع تيك توك بضمان', handle: '@'+user.name, price: '360ج', date: new Date().toLocaleDateString('ar-EG'), status: ['تم الاستلام','قيد التنفيذ','مكتمل'][Math.floor(Math.random()*3)], step: Math.floor(Math.random()*3)+1}
+                const updated = {...user, allOrders: [newOrder, ...(user.allOrders||[])]}
+                setUser(updated)
+                localStorage.setItem('trendup_user', JSON.stringify(updated))
+                const users = JSON.parse(localStorage.getItem('trendup_users') || '[]')
+                const idx = users.findIndex(u=>u.name===user.name)
+                if(idx>=0){ users[idx]=updated; localStorage.setItem('trendup_users', JSON.stringify(users)) }
+              }} className="w-full mt-6 bg-white/[0.06] border border-white/[0.1] border-dashed rounded-full py-3 text-[13px] hover:bg-white/[0.1]">+ اضافة طلب تجريبي (عشان تشوف الشكل)</button>
             </div>
           </div>
         </div>
