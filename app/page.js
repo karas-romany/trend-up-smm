@@ -1,90 +1,48 @@
+'use client'
+import { useState, useEffect } from 'react'
 
-// Loading Bar Component
 function TopLoadingBar() {
   const [progress, setProgress] = useState(0);
   const [visible, setVisible] = useState(false);
-  
-  useEffect(() => { setTimeout(()=> setInitialLoading(false), 1200); }, []);
   useEffect(() => {
     let interval;
-    const startLoading = () => {
-      setVisible(true);
-      setProgress(0);
-      interval = setInterval(() => {
-        setProgress(prev => {
-          if(prev >= 90) return prev;
-          return prev + Math.random()*15;
-        });
-      }, 200);
+    const start = () => {
+      setVisible(true); setProgress(0);
+      interval = setInterval(() => setProgress(p => p >= 90 ? p : p + Math.random()*15), 200);
     };
-    
-    const stopLoading = () => {
+    const stop = () => {
       setProgress(100);
-      setTimeout(() => {
-        setVisible(false);
-        setProgress(0);
-      }, 500);
+      setTimeout(() => { setVisible(false); setProgress(0); }, 400);
       clearInterval(interval);
     };
-
-    // Show on initial load
-    startLoading();
-    const t = setTimeout(stopLoading, 1500);
-
-    // Listen for route changes / clicks
-    const handleClick = (e) => {
+    start();
+    const t = setTimeout(stop, 1200);
+    const onClick = (e) => {
       const target = e.target.closest('a, button');
-      if(target){
-        startLoading();
-        setTimeout(stopLoading, 1000);
-      }
+      if(target){ start(); setTimeout(stop, 900); }
     };
-    window.addEventListener('click', handleClick);
-
-    return () => {
-      clearTimeout(t);
-      clearInterval(interval);
-      window.removeEventListener('click', handleClick);
-    };
+    window.addEventListener('click', onClick);
+    return () => { clearTimeout(t); clearInterval(interval); window.removeEventListener('click', onClick); };
   }, []);
-
   if(!visible) return null;
-
   return (
-    <div style={{position:'fixed', top:0, left:0, right:0, zIndex:9999, height:'4px', background:'transparent'}}>
-      <div style={{
-        height:'100%',
-        width: progress + '%',
-        background:'linear-gradient(90deg, #7c3aed, #ec4899, #f59e0b)',
-        transition:'width 0.3s ease',
-        boxShadow:'0 0 10px rgba(124,58,237,0.7)'
-      }} />
+    <div style={{position:'fixed', top:0, left:0, right:0, zIndex:9999, height:'4px'}}>
+      <div style={{height:'100%', width: progress+'%', background:'linear-gradient(90deg,#7c3aed,#ec4899,#f59e0b)', transition:'width 0.3s', boxShadow:'0 0 8px rgba(124,58,237,0.6)'}} />
     </div>
   );
 }
 
-// Full Page Loader for initial load
 function PageLoader({ show }) {
   if(!show) return null;
   return (
-    <div style={{
-      position:'fixed', inset:0, zIndex:9998, 
-      background:'rgba(255,255,255,0.9)', backdropFilter:'blur(10px)',
-      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'20px'
-    }}>
-      <div style={{
-        width:'60px', height:'60px', border:'4px solid #e9d5ff', 
-        borderTopColor:'#7c3aed', borderRadius:'50%', 
-        animation:'spin 0.8s linear infinite'
-      }} />
-      <div style={{fontWeight:'700', color:'#7c3aed'}}>جاري التحميل...</div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    <div style={{position:'fixed', inset:0, zIndex:9998, background:'rgba(255,255,255,0.92)', backdropFilter:'blur(12px)', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'18px'}}>
+      <div style={{width:'56px', height:'56px', border:'4px solid #e9d5ff', borderTopColor:'#7c3aed', borderRadius:'50%', animation:'spin 0.8s linear infinite'}} />
+      <div style={{fontWeight:'800', color:'#7c3aed'}}>جاري التحميل...</div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 }
 
-'use client'
-import { useState, useEffect } from 'react'
 
 const REVIEWS = [
   { name: 'أحمد محمد', handle: '@ahmed_gamer', text: 'زودت 10k متابع تيك توك في ساعتين وضمان حقيقي. شكرا Trend-Up!', stars: 5, platform: 'TikTok', avatar: '🎵' },
@@ -96,13 +54,14 @@ const REVIEWS = [
 ]
 
 export default function Home(){
+  const [initialLoading, setInitialLoading] = useState(true)
+  useEffect(()=>{ const t=setTimeout(()=> setInitialLoading(false), 1300); return ()=> clearTimeout(t); },[])
   const [aiOpen, setAiOpen] = useState(false)
   const [aiInput, setAiInput] = useState('')
   const [aiChat, setAiChat] = useState([{r:'ai', t:'أهلا يا بطل! 👋 أنا مساعد Trend-Up AI بأسعارك الحقيقية. اسألني عن أي خدمة!'}])
   const [activeTab, setActiveTab] = useState('tiktok')
   const [authOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState('login')
-  const [initialLoading, setInitialLoading] = useState(true);
   const [user, setUser] = useState(null)
   const [authForm, setAuthForm] = useState({name:'', email:'', password:''})
   const [reviews, setReviews] = useState(REVIEWS)
