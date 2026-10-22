@@ -124,30 +124,30 @@ const SERVICES_DATA = [
 ];
 
 export default function App() {
-  const [lang, setLang] = useState<Lang>('en');
-  const [view, setView] = useState<View>('home');
+  const [lang, setLang] = useState('en');
+  const [view, setView] = useState('home');
   const [mobileMenu, setMobileMenu] = useState(false);
   const [navNonce, setNavNonce] = useState(0);
-  const [authMode, setAuthMode] = useState<AuthMode>(null);
+  const [authMode, setAuthMode] = useState(null);
   const [showPass, setShowPass] = useState(false);
   const [authForm, setAuthForm] = useState({ email: '', password: '', confirm: '', remember: true });
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [transactions, setTransactions] = useState<any[]>([]);
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [orders, setOrders] = useState([]);
+  const [transactions, setTransactions] = useState([]);
+  const [favorites, setFavorites] = useState([]);
   const [searchQ, setSearchQ] = useState('');
   const [platformFilter, setPlatformFilter] = useState('all');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedPlatform, setSelectedPlatform] = useState('instagram');
-  const [selectedServiceId, setSelectedServiceId] = useState<number>(101);
+  const [selectedServiceId, setSelectedServiceId] = useState(101);
   const [linkInput, setLinkInput] = useState('');
   const [qtyInput, setQtyInput] = useState('1000');
   const [fundAmount, setFundAmount] = useState('50');
   const [fundMethod, setFundMethod] = useState('visa');
   const [orderSuccess, setOrderSuccess] = useState(null);
-  const [faqOpen, setFaqOpen] = useState<number | null>(0);
+  const [faqOpen, setFaqOpen] = useState(0);
   const [adminServices, setAdminServices] = useState(SERVICES_DATA);
 
   const t = translations[lang];
