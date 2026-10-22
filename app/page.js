@@ -104,9 +104,8 @@ const PLATFORMS = [
   { id: 'soundcloud', name: 'SoundCloud', color: 'bg-[#fff7ed] text-[#ea580c]', letter: 'SC' },
 ];
 
-type Svc = { id: number; name: string; platform: string; category: string; rate: number; min: number; max: number; desc: string; start: string; refill: string; popular?: boolean };
 
-const SERVICES_DATA: Svc[] = [
+const SERVICES_DATA = [
   { id: 101, name: 'Instagram Followers - High Quality', platform: 'instagram', category: 'Followers', rate: 1.20, min: 100, max: 100000, desc: 'Real-looking followers, no password needed. Stable with 30-day refill. Average start 0-15 min.', start: '0-15 min', refill: '30 days', popular: true },
   { id: 102, name: 'Instagram Likes - Fast', platform: 'instagram', category: 'Likes', rate: 0.45, min: 50, max: 50000, desc: 'Fast likes for posts/reels. Instant start.', start: '0-5 min', refill: '7 days', popular: true },
   { id: 103, name: 'Instagram Views - Reels', platform: 'instagram', category: 'Views', rate: 0.15, min: 100, max: 1000000, desc: 'Reels views with high retention.', start: 'Instant', refill: 'No' },
