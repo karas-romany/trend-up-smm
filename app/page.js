@@ -488,20 +488,7 @@ export default function Home(){
         </div>
       </div>
 
-      {/* AI */}
-      <div className="fixed bottom-6 left-6 z-50">
-          <div className="w-[360px] bg-[#151517] border border-white/[0.08] rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,.8)] overflow-hidden">
-            <div className="h-[300px] overflow-auto p-4 space-y-3 text-[13px]">
-              {aiChat.map((m,i)=><div key={i} className={`rounded-[14px] px-4 py-2.5 max-w-[85%] ${m.r==='ai' ? 'bg-white/[0.06] border border-white/[0.06]' : 'bg-[#8b5cf6] mr-auto'}`}>{m.t}</div>)}
-            </div>
-          </div>
-        ) : (
-        )}
-      </div>
-
-      <a href="https://wa.me/201275551116" target="_blank" className="btn-shimmer fixed bottom-6 right-6 z-50 w-[60px] h-[60px] bg-[#25D366] shadow-[0_10px_30px_rgba(37,211,102,.4)] rounded-full grid place-items-center text-2xl animate-[float_6s_ease-in-out_infinite]">💬</a>
-
-      <footer className="mt-16 border-t border-white/[0.06] py-8 text-center text-[11px] text-zinc-600">TREND-UP © 2026 — 01275551116 • فودافون كاش 01221192493</footer>
-    </div>
-  )
+      
+</div>
+  );
 }
