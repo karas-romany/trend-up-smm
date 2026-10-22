@@ -56,9 +56,6 @@ const REVIEWS = [
 export default function Home(){
   const [initialLoading, setInitialLoading] = useState(true)
   useEffect(()=>{ const t=setTimeout(()=> setInitialLoading(false), 1300); return ()=> clearTimeout(t); },[])
-  const [aiOpen, setAiOpen] = useState(false)
-  const [aiInput, setAiInput] = useState('')
-  const [aiChat, setAiChat] = useState([{r:'ai', t:'أهلا يا بطل! 👋 أنا مساعد Trend-Up AI بأسعارك الحقيقية. اسألني عن أي خدمة!'}])
   const [activeTab, setActiveTab] = useState('tiktok')
   const [authOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState('login')
@@ -123,8 +120,6 @@ export default function Home(){
   }
 
   const askAI = ()=>{
-    if(!aiInput.trim()) return
-    const q = aiInput.toLowerCase()
     let ans = 'اسألني: أسعار تيك توك؟ انستا؟ فيسبوك؟'
     if(q.includes('تيك توك') || q.includes('tiktok')){
       if(q.includes('متابع')) ans = 'متابعين تيك توك: بضمان 90 يوم 360ج لكل 1000 ⚡ بدون ضمان 180ج 👍'
@@ -134,7 +129,6 @@ export default function Home(){
     else if(q.includes('لايك')) ans = 'تيك توك لايكات: 1k=35ج، 3k=95ج، 5k=165ج، 10k=340ج ❤️'
     else if(q.includes('نقط') || q.includes('خصم')) ans = user ? `نقاطك: ${user.points} - كل 100 نقطة = خصم 10%` : 'سجل دخول عشان تجمع نقاط! كل ريفيو = 10 نقاط'
     else if(q.includes('ازاي') || q.includes('اطلب')) ans = 'اختار الباقة → دوس اطلب → واتساب → فودافون كاش 01221192493'
-    setAiChat([...aiChat, {r:'user', t:aiInput}, {r:'ai', t:ans}]); setAiInput('')
   }
 
   const waLink = (text) => `https://wa.me/201275551116?text=${encodeURIComponent(text)}`
@@ -496,16 +490,12 @@ export default function Home(){
 
       {/* AI */}
       <div className="fixed bottom-6 left-6 z-50">
-        {aiOpen ? (
           <div className="w-[360px] bg-[#151517] border border-white/[0.08] rounded-[24px] shadow-[0_20px_60px_rgba(0,0,0,.8)] overflow-hidden">
-            <div className="bg-gradient-to-r from-[#8b5cf6] to-[#ec4899] p-4 flex justify-between"><span className="font-bold text-[13px]">✦ مساعد Trend-Up AI</span><button onClick={()=>setAiOpen(false)}>✕</button></div>
             <div className="h-[300px] overflow-auto p-4 space-y-3 text-[13px]">
               {aiChat.map((m,i)=><div key={i} className={`rounded-[14px] px-4 py-2.5 max-w-[85%] ${m.r==='ai' ? 'bg-white/[0.06] border border-white/[0.06]' : 'bg-[#8b5cf6] mr-auto'}`}>{m.t}</div>)}
             </div>
-            <div className="p-3 border-t border-white/[0.06] flex gap-2"><input value={aiInput} onChange={e=>setAiInput(e.target.value)} onKeyDown={e=>e.key==='Enter' && askAI()} placeholder="بكام متابعين تيك توك؟" className="flex-1 bg-[#0a0a0a] border border-white/[0.08] rounded-full px-4 py-2.5 text-[13px] outline-none"/><button onClick={askAI} className="w-10 h-10 bg-[#8b5cf6] rounded-full grid place-items-center">↑</button></div>
           </div>
         ) : (
-          <button onClick={()=>setAiOpen(true)} className="btn-shimmer w-[60px] h-[60px] bg-gradient-to-br from-[#8b5cf6] to-[#ec4899] rounded-full grid place-items-center text-xl glow animate-[float_6s_ease-in-out_infinite]">🤖</button>
         )}
       </div>
 
