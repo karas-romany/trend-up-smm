@@ -1,10 +1,6 @@
 'use client'
 import React, { useState, useEffect, useMemo } from 'react';
 
-type Lang = 'en' | 'ar';
-type AuthMode = 'signin' | 'signup' | 'forgot' | null;
-type View = 'home' | 'services' | 'api' | 'dashboard-new' | 'dashboard-orders' | 'dashboard-funds' | 'dashboard-transactions' | 'dashboard-fav' | 'dashboard-support' | 'dashboard-settings' | 'dashboard-api' | 'dashboard-admin';
-type OrderStatus = 'Pending' | 'Processing' | 'Completed' | 'Cancelled' | 'Partial';
 
 const translations = {
   en: {
@@ -138,7 +134,7 @@ export default function App() {
   const [authForm, setAuthForm] = useState({ email: '', password: '', confirm: '', remember: true });
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState(null);
   const [orders, setOrders] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [favorites, setFavorites] = useState<number[]>([]);
@@ -151,14 +147,14 @@ export default function App() {
   const [qtyInput, setQtyInput] = useState('1000');
   const [fundAmount, setFundAmount] = useState('50');
   const [fundMethod, setFundMethod] = useState('visa');
-  const [orderSuccess, setOrderSuccess] = useState<any>(null);
+  const [orderSuccess, setOrderSuccess] = useState(null);
   const [faqOpen, setFaqOpen] = useState<number | null>(0);
-  const [adminServices, setAdminServices] = useState<Svc[]>(SERVICES_DATA);
+  const [adminServices, setAdminServices] = useState(SERVICES_DATA);
 
   const t = translations[lang];
 
   useEffect(() => {
-    const savedLang = localStorage.getItem('gx_lang') as Lang;
+    const savedLang = localStorage.getItem('gx_lang');
     if (savedLang) setLang(savedLang);
     const savedUser = localStorage.getItem('gx_user');
     if (savedUser) setUser(JSON.parse(savedUser));
@@ -195,7 +191,7 @@ export default function App() {
 
   const isAdmin = user?.email === 'admin@admin.com';
 
-  const handleAuth = (mode: AuthMode) => {
+  const handleAuth = (mode) => {
     setAuthError(''); setAuthLoading(true);
     setTimeout(() => {
       if (mode === 'signin') {
@@ -226,11 +222,11 @@ export default function App() {
       link: linkInput,
       quantity: qtyNum,
       charge: priceCalc,
-      status: 'Pending' as OrderStatus,
+      status: 'Pending',
       date: new Date().toISOString(),
     };
     setOrders(prev => [order, ...prev]);
-    setUser((u: any) => ({ ...u, balance: +(u.balance - priceCalc).toFixed(3) }));
+    setUser((u) => ({ ...u, balance: +(u.balance - priceCalc).toFixed(3) }));
     setOrderSuccess(order);
     setTransactions(prev => [{ id: Date.now(), type: 'order', amount: -priceCalc, desc: `Order #${order.id}`, date: new Date().toISOString() }, ...prev]);
     setTimeout(() => {
@@ -246,7 +242,7 @@ export default function App() {
   const handleAddFunds = () => {
     const amt = parseFloat(fundAmount);
     if (isNaN(amt) || amt < 1) return;
-    setUser((u: any) => ({ ...u, balance: +(u.balance + amt).toFixed(3) }));
+    setUser((u) => ({ ...u, balance: +(u.balance + amt).toFixed(3) }));
     setTransactions(prev => [{ id: Date.now(), type: 'fund', amount: amt, method: fundMethod, desc: `Add funds via ${fundMethod}`, date: new Date().toISOString(), status: 'Completed' }, ...prev]);
     setFundAmount('50');
   };
@@ -276,9 +272,9 @@ export default function App() {
             </button>
             <nav className="hidden md:flex items-center gap-1">
               {[
-                { k: 'home', label: t.home, v: 'home' as View },
-                { k: 'services', label: t.services, v: 'services' as View },
-                { k: 'api', label: t.api, v: 'api' as View },
+                { k: 'home', label: t.home, v: 'home' },
+                { k: 'services', label: t.services, v: 'services' },
+                { k: 'api', label: t.api, v: 'api' },
               ].map(item => (
                 <button key={item.k} onClick={() => { setView(item.v); setNavNonce(n=>n+1); window.scrollTo({top:0}); }} className={`h-9 px-4 rounded-full text-[14px] font-medium transition ${view === item.v ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-white hover:text-slate-900'}`}>{item.label}</button>
               ))}
@@ -636,7 +632,7 @@ export default function App() {
                   { v: 'dashboard-api', l: t.apiKey, i: '</>' },
                   ...(isAdmin ? [{ v: 'dashboard-admin', l: t.admin, i: '⚑' } as any] : []),
                 ].map(item => (
-                  <button key={item.v} onClick={() => setView(item.v === 'dashboard-services' ? 'services' : item.v as View)} className={`w-full h-10 rounded-full px-4 text-left flex items-center gap-3 text-[13px] font-medium transition ${view === item.v ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-[#f8f9fb]'}`}>
+                  <button key={item.v} onClick={() => setView(item.v === 'dashboard-services' ? 'services' : item.v)} className={`w-full h-10 rounded-full px-4 text-left flex items-center gap-3 text-[13px] font-medium transition ${view === item.v ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-[#f8f9fb]'}`}>
                     <span className="h-6 w-6 rounded-full bg-white/10 border border-black/5 grid place-items-center text-[12px]">{item.i}</span>{item.l}
                   </button>
                 ))}
@@ -655,7 +651,7 @@ export default function App() {
                   { v: 'dashboard-fav', l: t.favorites },
                   { v: 'services', l: t.services },
                 ].map(item => (
-                  <button key={item.v} onClick={() => setView(item.v as View)} className={`whitespace-nowrap h-10 px-4 rounded-full border text-[13px] font-medium ${view === item.v ? 'bg-slate-900 text-white border-slate-900' : 'bg-white border-slate-200 text-slate-600'}`}>{item.l}</button>
+                  <button key={item.v} onClick={() => setView(item.v)} className={`whitespace-nowrap h-10 px-4 rounded-full border text-[13px] font-medium ${view === item.v ? 'bg-slate-900 text-white border-slate-900' : 'bg-white border-slate-200 text-slate-600'}`}>{item.l}</button>
                 ))}
               </div>
 
@@ -909,7 +905,7 @@ export default function App() {
                     <div className="text-[13px] text-slate-600">Use this key server-side only. Never expose in frontend.</div>
                     <code className="block rounded-[12px] bg-[#f8f9fb] border border-slate-200 p-3 text-[12px] font-mono break-all">{user?.apiKey}</code>
                     <div className="flex gap-2">
-                      <button onClick={() => { const k = 'gx_' + Math.random().toString(36).slice(2, 10); setUser((u: any) => ({ ...u, apiKey: k })); }} className="h-10 px-4 rounded-full bg-white border border-slate-200 text-[13px] font-medium">Regenerate</button>
+                      <button onClick={() => { const k = 'gx_' + Math.random().toString(36).slice(2, 10); setUser((u) => ({ ...u, apiKey: k })); }} className="h-10 px-4 rounded-full bg-white border border-slate-200 text-[13px] font-medium">Regenerate</button>
                       <button onClick={() => navigator.clipboard.writeText(user?.apiKey)} className="h-10 px-4 rounded-full bg-slate-900 text-white text-[13px] font-medium">Copy key</button>
                     </div>
                   </div>
